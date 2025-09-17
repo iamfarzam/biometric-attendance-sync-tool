@@ -24,7 +24,25 @@ class ZKHelperExtended(ZK_helper):
 
 
 class ZKExtended(ZK):
-    def __init__(self, ip, port=4370, timeout=60, password=0, force_udp=False, ommit_ping=False, verbose=False,
-                 encoding='UTF-8'):
-        super().__init__(**locals())
+    def __init__(
+            self,
+            ip,
+            port=4370,
+            timeout=60,
+            password=0,
+            force_udp=False,
+            ommit_ping=False,
+            verbose=False,
+            encoding='UTF-8'
+    ):
+        super().__init__(
+            ip=ip,
+            port=port,
+            timeout=timeout,
+            password=password,
+            force_udp=force_udp,
+            ommit_ping=ommit_ping,
+            verbose=verbose,
+            encoding=encoding
+        )
         self.helper = ZKHelperExtended(ip, port)
