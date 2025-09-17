@@ -1,7 +1,8 @@
 import time
-from pathlib import Path
+
 from SMWinservice import SMWinservice
 from erpnext_sync import main
+
 
 class PythonCornerExample(SMWinservice):
     _svc_name_ = "ERPNextBiometricPushService"
@@ -18,6 +19,7 @@ class PythonCornerExample(SMWinservice):
         while self.isrunning:
             main()
             time.sleep(15)
+
 
 if __name__ == '__main__':
     PythonCornerExample.parse_command_line()

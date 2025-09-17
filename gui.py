@@ -2,16 +2,22 @@ import datetime
 import json
 import os
 import shlex
-import sys
 import subprocess
-import local_config as config
+import sys
 
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QRegExp
-from PyQt5.QtGui import QIntValidator, QRegExpValidator
-from PyQt5.QtWidgets import QApplication, QLabel, QLineEdit, QMainWindow, QMessageBox, QPushButton
+from PyQt5.QtGui import QIntValidator
+from PyQt5.QtGui import QRegExpValidator
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QLabel
+from PyQt5.QtWidgets import QLineEdit
+from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QPushButton
 
+import local_config as config
 
 config_template = '''# ERPNext related configs
 ERPNEXT_API_KEY = '{0}'
@@ -98,7 +104,8 @@ class BiometricWindow(QMainWindow):
 
         # Actions buttons
         self.create_button('Set Configuration', 'set_conf', 20, 500, 130, 30, self.setup_local_config)
-        self.create_button('Start Service', 'start_or_stop_service', 320, 500, 130, 30, self.integrate_biometric, enable=False)
+        self.create_button('Start Service', 'start_or_stop_service', 320, 500, 130, 30, self.integrate_biometric,
+                           enable=False)
         self.create_button('Running Status', 'running_status', 170, 500, 130, 30, self.get_running_status, enable=False)
         self.set_default_value_or_placeholder_of_field()
 
@@ -141,7 +148,7 @@ class BiometricWindow(QMainWindow):
 
     # Widgets Genrators
     def create_label(self, label_text, label_name, x, y, height, width):
-        setattr(self,  label_name, QLabel(self))
+        setattr(self, label_name, QLabel(self))
         label = getattr(self, label_name)
         label.move(x, y)
         label.setText(label_text)
@@ -150,7 +157,7 @@ class BiometricWindow(QMainWindow):
         label.show()
 
     def create_field(self, field_name, x, y, height, width):
-        setattr(self,  field_name, QLineEdit(self))
+        setattr(self, field_name, QLineEdit(self))
         field = getattr(self, field_name)
         field.move(x, y)
         field.resize(height, width)
@@ -165,7 +172,7 @@ class BiometricWindow(QMainWindow):
         field.show()
 
     def create_button(self, button_label, button_name, x, y, height, width, callback_function, enable=True):
-        setattr(self,  button_name, QPushButton(button_label, self))
+        setattr(self, button_name, QPushButton(button_label, self))
         button = getattr(self, button_name)
         button.move(x, y)
         button.resize(height, width)
@@ -182,10 +189,10 @@ class BiometricWindow(QMainWindow):
     def add_devices_fields(self):
         if self.counter < 5:
             self.counter += 1
-            self.create_field("device_id_" + str(self.counter), 20, 290+(self.counter * 30), 145, 30)
-            self.create_field("device_ip_" + str(self.counter), 165, 290+(self.counter * 30), 145, 30)
+            self.create_field("device_id_" + str(self.counter), 20, 290 + (self.counter * 30), 145, 30)
+            self.create_field("device_ip_" + str(self.counter), 165, 290 + (self.counter * 30), 145, 30)
             self.validate_data(self.reg_exp_for_ip, "device_ip_" + str(self.counter))
-            self.create_field("shift_" + str(self.counter), 310, 290+(self.counter * 30), 145, 30)
+            self.create_field("shift_" + str(self.counter), 310, 290 + (self.counter * 30), 145, 30)
 
     def validate_data(self, reg_exp, field_name):
         field = getattr(self, field_name)
@@ -251,7 +258,7 @@ class BiometricWindow(QMainWindow):
         devices = []
         shifts = []
 
-        for idx in range(0, self.counter+1):
+        for idx in range(0, self.counter + 1):
             shift = getattr(self, "shift_" + str(idx)).text()
             device_id = getattr(self, "device_id_" + str(idx)).text()
             devices.append({
@@ -263,8 +270,8 @@ class BiometricWindow(QMainWindow):
             if shift in device:
                 device[shift].append(device_id)
             else:
-                device[shift]=[device_id]
-        
+                device[shift] = [device_id]
+
         for shift_type_name in device.keys():
             shifts.append({
                 'shift_type_name': shift_type_name,
@@ -279,42 +286,46 @@ class BiometricWindow(QMainWindow):
         formated_date = "".join([ele for ele in reversed(string.split("/"))])
 
         devices, shifts = self.get_device_details()
-        return config_template.format(self.textbox_erpnext_api_key.text(), self.textbox_erpnext_api_secret.text(), self.textbox_erpnext_url.text(), self.textbox_pull_frequency.text(), formated_date, json.dumps(devices), json.dumps(shifts))
+        return config_template.format(self.textbox_erpnext_api_key.text(), self.textbox_erpnext_api_secret.text(),
+                                      self.textbox_erpnext_url.text(), self.textbox_pull_frequency.text(),
+                                      formated_date, json.dumps(devices), json.dumps(shifts))
 
     def get_running_status(self):
         running_status = []
-        with open('/'.join([config.LOGS_DIRECTORY])+'/logs.log', 'r') as f:
+        with open('/'.join([config.LOGS_DIRECTORY]) + '/logs.log', 'r') as f:
             index = 0
-            for idx, line in enumerate(f,1):
+            for idx, line in enumerate(f, 1):
                 logdate = convert_into_date(line.split(',')[0], '%Y-%m-%d %H:%M:%S')
-                if logdate and logdate >= convert_into_date(self.service_start_time.text().split('.')[0] , '%Y-%m-%d %H:%M:%S'):
+                if logdate and logdate >= convert_into_date(self.service_start_time.text().split('.')[0],
+                                                            '%Y-%m-%d %H:%M:%S'):
                     index = idx
                     break
             if index:
-                running_status.extend(read_file_contents('logs',index))
+                running_status.extend(read_file_contents('logs', index))
 
-        with open('/'.join([config.LOGS_DIRECTORY])+'/error.log', 'r') as fread:
+        with open('/'.join([config.LOGS_DIRECTORY]) + '/error.log', 'r') as fread:
             error_index = 0
-            for error_idx, error_line in enumerate(fread,1):
-                start_date = convert_into_date(self.service_start_time.text().split('.')[0] , '%Y-%m-%d %H:%M:%S')
+            for error_idx, error_line in enumerate(fread, 1):
+                start_date = convert_into_date(self.service_start_time.text().split('.')[0], '%Y-%m-%d %H:%M:%S')
                 if start_date and start_date.strftime('%Y-%m-%d') in error_line:
                     error_logdate = convert_into_date(error_line.split(',')[0], '%Y-%m-%d %H:%M:%S')
                     if error_logdate and error_logdate >= start_date:
                         error_index = error_idx
                         break
             if error_index:
-                running_status.extend(read_file_contents('error',error_index))
+                running_status.extend(read_file_contents('error', error_index))
 
         if running_status:
             create_message_box("Running status", ''.join(running_status))
         else:
             create_message_box("Running status", 'Process not yet started')
 
+
 def read_file_contents(file_name, index):
     running_status = []
-    with open('/'.join([config.LOGS_DIRECTORY])+f'/{file_name}.log', 'r') as file_handler:
-        for idx, line in enumerate(file_handler,1):
-            if idx>=index:
+    with open('/'.join([config.LOGS_DIRECTORY]) + f'/{file_name}.log', 'r') as file_handler:
+        for idx, line in enumerate(file_handler, 1):
+            if idx >= index:
                 running_status.append(line)
     return running_status
 
@@ -377,7 +388,7 @@ def create_message_box(title, text, icon="information", width=150):
         else:
             msg.setIcon(QtWidgets.QMessageBox.Information)
             msg.setStyleSheet("QMessageBox Information{min-width: 50 px;}")
-        msg.setStyleSheet("QmessageBox QLabel{min-width: "+str(width)+"px;}")
+        msg.setStyleSheet("QmessageBox QLabel{min-width: " + str(width) + "px;}")
     msg.exec_()
 
 
