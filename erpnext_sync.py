@@ -9,7 +9,7 @@ import requests
 from pickledb import PickleDB
 
 import local_config as config
-from zk_extension import ZK
+from zk_extension import ZKExtended as ZK
 
 EMPLOYEE_NOT_FOUND_ERROR_MESSAGE = "No Employee found for the given employee field value"
 EMPLOYEE_INACTIVE_ERROR_MESSAGE = "Transactions cannot be created for an Inactive Employee"
