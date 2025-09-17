@@ -19,7 +19,7 @@ class ZKHelperExtended(ZK_helper):
         #                     stdout=subprocess.PIPE,
         #                     stderr=subprocess.PIPE,
         #                     shell=need_sh) == 0
-        print(*args, end=' ')
+        print(args)
         return True
 
 
