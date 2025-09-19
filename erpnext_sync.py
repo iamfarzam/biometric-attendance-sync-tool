@@ -216,7 +216,7 @@ def send_to_erpnext(employee_field_value, timestamp, device_id=None, log_type=No
     }
     data = {
         'employee_field_value': employee_field_value,
-        'timestamp': timestamp.__str__(),
+        'timestamp': timestamp.strftime("%Y-%d-%m %H:%M:%S.%f"),
         'device_id': device_id,
         'log_type': log_type,
         'latitude': latitude,
